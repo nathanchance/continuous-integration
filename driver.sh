@@ -270,6 +270,7 @@ mako_reactor() {
        HOSTCC="${CC}" \
        HOSTCXX="${HOSTCXX}" \
        HOSTLD="${HOSTLD:-ld}" \
+       HOSTLDFLAGS="${HOSTLD:+-fuse-ld=lld}" \
        LD="${LD}" \
        NM="${NM}" \
        OBJCOPY="${OBJCOPY}" \
