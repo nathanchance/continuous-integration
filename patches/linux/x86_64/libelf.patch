@@ -1,0 +1,26 @@
+diff --git a/Makefile b/Makefile
+index d24f5a8009ee..860cc8961a95 100644
+--- a/Makefile
++++ b/Makefile
+@@ -984,7 +984,7 @@ HOST_LIBELF_LIBS = $(shell pkg-config libelf --libs 2>/dev/null || echo -lelf)
+ 
+ ifdef CONFIG_STACK_VALIDATION
+   has_libelf := $(call try-run,\
+-		echo "int main() {}" | $(HOSTCC) -xc -o /dev/null $(HOST_LIBELF_LIBS) -,1,0)
++		echo "int main() {}" | $(HOSTCC) -xc -o /dev/null $(HOSTLDFLAGS) $(HOST_LIBELF_LIBS) -,1,0)
+   ifeq ($(has_libelf),1)
+     objtool_target := tools/objtool FORCE
+   else
+diff --git a/tools/objtool/Makefile b/tools/objtool/Makefile
+index 53f8be0f4a1f..76ecc7e086ea 100644
+--- a/tools/objtool/Makefile
++++ b/tools/objtool/Makefile
+@@ -11,7 +11,7 @@ HOSTCC	?= gcc
+ HOSTLD	?= ld
+ CC	 = $(HOSTCC)
+ LD	 = $(HOSTLD)
+-AR	 = ar
++AR	 ?= ar
+ 
+ ifeq ($(srctree),)
+ srctree := $(patsubst %/,%,$(dir $(CURDIR)))
