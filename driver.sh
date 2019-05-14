@@ -5,7 +5,7 @@ set -eu
 setup_variables() {
   while [[ ${#} -ge 1 ]]; do
     case ${1} in
-      "AR="*|"ARCH="*|"CC="*|"LD="*|"NM"=*|"OBJCOPY"=*|"OBJDUMP"=*|"REPO="*|"STRIP"=*) export "${1?}" ;;
+      "AR="*|"ARCH="*|"CC="*|"HOSTCXX="*|"LD="*|"NM"=*|"OBJCOPY"=*|"OBJDUMP"=*|"REPO="*|"STRIP"=*) export "${1?}" ;;
       "-c"|"--clean") cleanup=true ;;
       "-j"|"--jobs") shift; jobs=$1 ;;
       "-j"*) jobs=${1/-j} ;;
@@ -175,6 +175,11 @@ check_dependencies() {
     echo
     exit;
   }
+  if [[ -z "${HOSTCXX:-}" ]]; then
+    for HOSTCXX in clang++-9 clang++-8 clang++-7 clang++; do
+      command -v ${HOSTCXX} &>/dev/null && break
+    done
+  fi
 
   if [[ -z "${AR:-}" ]]; then
     for AR in llvm-ar-9 llvm-ar-8 llvm-ar-7 llvm-ar "${CROSS_COMPILE:-}"ar; do
@@ -263,6 +268,7 @@ mako_reactor() {
        AR="${AR}" \
        CC="${CC}" \
        HOSTCC="${CC}" \
+       HOSTCXX="${HOSTCXX}" \
        HOSTLD="${HOSTLD:-ld}" \
        LD="${LD}" \
        NM="${NM}" \
