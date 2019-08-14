@@ -87,6 +87,12 @@ setup_variables() {
       qemu_cmdline=( -cpu cortex-a57
                      -drive "file=images/arm64/rootfs.ext4,format=raw"
                      -append "console=ttyAMA0 root=/dev/vda" )
+      aavmf=/usr/share/AAVMF
+      if [[ -f ${aavmf}/AAVMF_CODE.fd && -f ${aavmf}/AAVMF_VARS.fd ]]; then
+        cp ${aavmf}/AAVMF_VARS.fd images/arm64
+        qemu_cmdline+=( -drive "if=pflash,format=raw,readonly,file=${aavmf}/AAVMF_CODE.fd"
+                        -drive "if=pflash,format=raw,file=images/arm64/AAVMF_VARS.fd" )
+      fi
       export CROSS_COMPILE=aarch64-linux-gnu- ;;
 
     "mipsel")
@@ -147,6 +153,12 @@ setup_variables() {
           qemu_cmdline=( -drive "file=images/x86_64/rootfs.ext4,format=raw,if=ide"
                          -append "console=ttyS0 root=/dev/sda" ) ;;
       esac
+      ovmf=/usr/share/OVMF
+      if [[ -f ${ovmf}/OVMF_CODE.fd && -f ${ovmf}/OVMF_VARS.fd ]]; then
+        cp ${ovmf}/OVMF_VARS.fd images/x86_64
+        qemu_cmdline+=( -drive "if=pflash,format=raw,readonly,file=${ovmf}/OVMF_CODE.fd"
+                        -drive "if=pflash,format=raw,file=images/x86_64/OVMF_VARS.fd" )
+      fi
       # Use KVM if the processor supports it (first part) and the KVM module is loaded (second part)
       [[ $(grep -c -E 'vmx|svm' /proc/cpuinfo) -gt 0 && $(lsmod 2>/dev/null | grep -c kvm) -gt 0 ]] && qemu_cmdline=( "${qemu_cmdline[@]}" -enable-kvm )
       image_name=bzImage
