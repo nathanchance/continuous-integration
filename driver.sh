@@ -151,8 +151,8 @@ setup_variables() {
                          -initrd "images/x86_64/rootfs.cpio" ) ;;
         *)
           config=defconfig
-          qemu_cmdline=( -drive "file=images/x86_64/rootfs.ext4,format=raw,if=ide"
-                         -append "console=ttyS0 root=/dev/sda" ) ;;
+          qemu_cmdline=( -drive "file=images/x86_64/rootfs.ext4,format=raw,if=virtio"
+                         -append "console=ttyS0 root=/dev/vda" ) ;;
       esac
       ovmf=/usr/share/OVMF
       if [[ -f ${ovmf}/OVMF_CODE.fd && -f ${ovmf}/OVMF_VARS.fd ]]; then
