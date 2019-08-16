@@ -89,7 +89,7 @@ setup_variables() {
                      -device "virtio-blk-device,drive=rootfs"
                      -append "console=ttyAMA0 earlycon root=/dev/vda" )
       aavmf=/usr/share/AAVMF
-      if [[ -f ${aavmf}/AAVMF_CODE.fd && -f ${aavmf}/AAVMF_VARS.fd ]]; then
+      if [[ ${tree} != common && -f ${aavmf}/AAVMF_CODE.fd && -f ${aavmf}/AAVMF_VARS.fd ]]; then
         cp ${aavmf}/AAVMF_VARS.fd images/arm64
         qemu_cmdline+=( -drive "if=pflash,format=raw,readonly,file=${aavmf}/AAVMF_CODE.fd"
                         -drive "if=pflash,format=raw,file=images/arm64/AAVMF_VARS.fd" )
@@ -155,7 +155,7 @@ setup_variables() {
                          -append "console=ttyS0 root=/dev/vda" ) ;;
       esac
       ovmf=/usr/share/OVMF
-      if [[ -f ${ovmf}/OVMF_CODE.fd && -f ${ovmf}/OVMF_VARS.fd ]]; then
+      if [[ ${tree} != common && -f ${ovmf}/OVMF_CODE.fd && -f ${ovmf}/OVMF_VARS.fd ]]; then
         cp ${ovmf}/OVMF_VARS.fd images/x86_64
         qemu_cmdline+=( -drive "if=pflash,format=raw,readonly,file=${ovmf}/OVMF_CODE.fd"
                         -drive "if=pflash,format=raw,file=images/x86_64/OVMF_VARS.fd" )
