@@ -3,4 +3,5 @@
 .ccache
 /common/
 /linux/
+/linux-lto/
 /linux-next/

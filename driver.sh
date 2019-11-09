@@ -33,6 +33,10 @@ setup_variables() {
     "linux-next")
       owner=next
       tree=linux-next ;;
+    "linux-lto")
+      tree=${REPO}
+      branch=clang-cfi
+      url=https://github.com/samitolvanen/linux ;;
     "4.4"|"4.9"|"4.14"|"4.19")
       owner=stable
       branch=linux-${REPO}.y
@@ -306,7 +310,7 @@ build_linux() {
     git fetch --depth=1 ${url} ${branch:=master}
     git reset --hard FETCH_HEAD
   else
-    git clone --depth=1 -b ${branch:=master} --single-branch ${url}
+    git clone --depth=1 -b ${branch:=master} --single-branch ${url} ${tree}
     cd ${tree}
   fi
 
@@ -333,8 +337,13 @@ build_linux() {
     [[ $ARCH != "x86_64" ]] && cat ../configs/tt.config >> .config
     # Disable ftrace on arm32: https://github.com/ClangBuiltLinux/linux/issues/35
     [[ $ARCH == "arm" ]] && ./scripts/config -d CONFIG_FTRACE
-    # Disable LTO and CFI unless explicitly requested
-    ${disable_lto:=true} && ./scripts/config -d CONFIG_LTO -d CONFIG_LTO_CLANG
+    # Enable LTO if testing the version based on mainline
+    if [[ ${tree} = "linux-lto" ]]; then
+      ./scripts/config -e CONFIG_LTO_CLANG
+    else
+      # Disable LTO and CFI unless explicitly requested
+      ${disable_lto:=true} && ./scripts/config -d CONFIG_LTO -d CONFIG_LTO_CLANG
+    fi
   fi
   # Make sure we build with CONFIG_DEBUG_SECTION_MISMATCH so that the
   # full warning gets printed and we can file and fix it properly.
